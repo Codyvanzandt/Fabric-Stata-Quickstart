@@ -39,7 +39,7 @@ Using Stata in Fabric requires a Python background process to handle the data tr
 
 1. Inside PowerShell, run the following command to install `uv`:
    ```powershell
-   powershell -ExecutionPolicy ByPass -c "irm [https://astral.sh/uv/install.ps1](https://astral.sh/uv/install.ps1) | iex"
+   powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
    ```
 2. Close your PowerShell window, open a new one (Windows key, type "PowerShell"), and run this command to verify the installation was successful:
    ```powershell
