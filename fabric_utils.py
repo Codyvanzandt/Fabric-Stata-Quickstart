@@ -1,3 +1,4 @@
+import os
 import struct
 import yaml
 import warnings
@@ -45,8 +46,9 @@ def write_table(df: pd.DataFrame, schema: str, table_name: str):
     config = load_config()
     lakehouse_path = config['fabric']['lakehouse_abfs_path']
     
-    # Inject the schema into the OneLake path
-    full_table_path = f"{lakehouse_path}/{schema}/{table_name}"
+    # Inject /Tables/ so Fabric recognizes it as a managed Delta table.
+    # We concatenate schema and table_name since standard Lakehouses flatten schemas.
+    full_table_path = f"{lakehouse_path}/Tables/{schema}_{table_name}"
     
     # 1. Get token for Storage
     token = _credential.get_token("https://storage.azure.com/.default").token
@@ -67,11 +69,14 @@ def run_stata_script(df: pd.DataFrame, do_file_path: str) -> pd.DataFrame:
     # Import inside the function so it doesn't crash on machines without Stata
     from pystata import stata 
     
+    # Let Python figure out the absolute path so Stata doesn't get lost
+    absolute_path = os.path.abspath(do_file_path)
+    
     # Push data in
     stata.pdataframe_to_data(df, force=True)
     
-    # Run their native code
-    stata.run(f"do {do_file_path}")
+    # Run their native code (Wrap the path in double quotes to protect against spaces)
+    stata.run(f'do "{absolute_path}"')
     
     # Pull data out
     result_df = stata.pdataframe_from_data()
