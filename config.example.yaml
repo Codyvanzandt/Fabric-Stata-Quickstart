@@ -1,0 +1,11 @@
+stata:
+  # The full path where Stata is installed on your local machine
+  install_path: "C:/Program Files/Stata18"
+  # The edition of Stata (e.g., 'mp', 'se', 'be')
+  edition: "mp"
+
+fabric:
+  # Your Fabric Workspace details
+  warehouse_server: "<some id?.datawarehouse.fabric.microsoft.com"
+  warehouse_name: "Some_Workspace_Name"
+  lakehouse_abfs_path: "abfss://<Some_Workspace_Name>@onelake.dfs.fabric.microsoft.com/<Some_Workspace_Name>.Lakehouse/Tables"

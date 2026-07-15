@@ -1,0 +1,8 @@
+pandas
+sqlalchemy
+pyodbc
+azure-identity
+deltalake
+pyarrow
+pyyaml
+ipykernel
