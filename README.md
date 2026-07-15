@@ -17,7 +17,7 @@ To download this project setup to your computer, you will use a version control 
 4. Inside that folder, Shift-right-click and select "Open PowerShell window here"
 4. Inside PowerShell, run the following command to download the project:
    ```powershell
-   git clone [https://github.com/Codyvanzandt/Fabric-Stata](https://github.com/Codyvanzandt/Fabric-Stata-QuickStart) Fabric-Stata
+   git clone https://github.com/Codyvanzandt/Fabric-Stata-Quickstart Fabric-Stata
    ```
 This will automatically create a folder named `Fabric-Stata` containing all the files you need. Keep PowerShell open.
 
