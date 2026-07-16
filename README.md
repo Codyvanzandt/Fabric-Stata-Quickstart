@@ -106,7 +106,7 @@ fabric:
   lakehouse_abfs_path: "abfss://Your_Workspace_Name@onelake.dfs.fabric.microsoft.com/Your_Lakehouse_Name.Lakehouse"
 ```
 
-3. Set `install_path` to your Stata install and `edition` to `mp`, `se`, or `be`.
+3. Set `install_path` to your Stata install and `edition` to `mp`, `se`, or `be`. Prefer forward slashes in Windows paths (e.g. `C:/Program Files/Stata18`).
 4. Set the Fabric warehouse and lakehouse values for your workspace.
 5. For `lakehouse_abfs_path`, use the lakehouse root only — **do not** add a trailing `/` or `/Tables` (the library appends `/Tables/...` when writing).
 6. Save the file (`Ctrl+S`).
@@ -155,14 +155,14 @@ Your Fabric credentials periodically expire. When that happens, a browser Window
 
 ### Run your Stata Code
 
-In another code cell, use the `run_stata_script` function to execute a Stata do-file, passing in the dataframe created by `read_table` and the path to your Stata file. The path should be relative to the location of your Jupyter notebook.
+In another code cell, use the `run_stata_script` function to execute a Stata do-file, passing in the dataframe created by `read_table` and the path to your Stata file. Use an **absolute** path to the `.do` file and prefer forward slashes:
+
+```python
+processed_data = run_stata_script(fabric_data, "C:/path/to/your/dofile.do")
+```
 
 Don't use `use` in your do-file. The Python code loads the data into Stata as if you had opened the dataset manually.
 At the end of your `.do` file, use the `keep` command to select the final columns you want to write to Fabric.
-
-```python
-processed_data = run_stata_script(fabric_data, "path/to/your/stata/file.do")
-```
 
 ## Write the Data to Fabric
 
