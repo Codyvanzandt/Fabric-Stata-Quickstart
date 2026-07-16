@@ -10,10 +10,14 @@
 
 ## Install the library from GitHub
 
-In a virtual environment:
+Create a project folder and virtual environment, then install the package:
 
 ```powershell
+mkdir Fabric-Stata
+cd Fabric-Stata
+uv venv --python 3.11
 uv pip install "git+https://github.com/Codyvanzandt/Fabric-Stata-Quickstart.git"
+uv pip install ipykernel
 ```
 
 Or with pip:
@@ -22,43 +26,31 @@ Or with pip:
 pip install "git+https://github.com/Codyvanzandt/Fabric-Stata-Quickstart.git"
 ```
 
-Then import:
+Installing the package does **not** ship example notebooks or a config file. You create those in your own project folder (see below).
 
-```python
-from fabric_stata import load_config, read_table, write_table, run_stata_script
+System dependencies such as the ODBC driver, Stata, and Azure authentication are not installed by pip.
+
+To update later:
+
+```powershell
+uv pip install --force-reinstall --no-cache "git+https://github.com/Codyvanzandt/Fabric-Stata-Quickstart.git"
 ```
-
-For notebooks and local config, clone this repo (see below). System dependencies such as the ODBC driver, Stata, and Azure authentication are not installed by pip.
 
 ## Installations and Preparations
 
-### 1. Installing Git & Downloading the Project
-
-To download this project setup to your computer, you will use a version control tool called Git.
-
-1. Download and install Git for Windows here: [https://git-scm.com/install/windows](https://git-scm.com/install/windows)
-2. Open **PowerShell** on your computer.
-3. Open your File Explorer and navigate to the folder where you want this project to live.
-4. Inside that folder, Shift-right-click and select "Open PowerShell window here"
-4. Inside PowerShell, run the following command to download the project:
-   ```powershell
-   git clone https://github.com/Codyvanzandt/Fabric-Stata-Quickstart Fabric-Stata
-   ```
-This will automatically create a folder named `Fabric-Stata` containing all the files you need. Keep PowerShell open.
-
-### 2. Installing the SQL Driver
+### 1. Installing the SQL Driver
 
 Because we are securely connecting to the enterprise Microsoft Fabric Data Warehouse, your computer needs a specific Microsoft driver installed to translate the database connection.
 
 1. Download the **ODBC Driver 18 for SQL Server (x64)** here: [Microsoft ODBC Driver Download](https://learn.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server?view=sql-server-ver17)
 2. Open the downloaded `.msi` file and click through the standard Windows installation wizard (you can leave all default settings as they are).
 
-### 3. Installing VS Code
+### 2. Installing VS Code
 
 VS Code is the integrated development environment (IDE) where you will write and run your Stata code.
 * Install VS Code here: [https://code.visualstudio.com/](https://code.visualstudio.com/)
 
-### 4. Installing Python & `uv`
+### 3. Installing Python & `uv`
 
 Using Stata in Fabric requires a Python background process to handle the data transfer. To install and manage Python, we use an industry-standard tool called `uv`.
 
@@ -76,10 +68,10 @@ Using Stata in Fabric requires a Python background process to handle the data tr
    uv python install 3.11
    ```
 
-### 5. Preparing VS Code
+### 4. Preparing VS Code
 
 1. Launch **VS Code** (Windows key, type "VS Code")
-2. In the top-left menu, select **File -> Open Folder**, and choose the `Fabric-Stata` folder you downloaded in Step 1.
+2. In the top-left menu, select **File -> Open Folder**, and choose your `Fabric-Stata` project folder.
 3. VS Code needs a few extensions to support our workflow. Click the **Extensions** icon on the far left sidebar (it looks like four blocks with one tumbling away).
 4. Search for and install the following extensions one by one (click "Install", wait until the Install button turns into a cog icon, indicating it has finished):
    * **Python** (by Microsoft)
@@ -87,71 +79,56 @@ Using Stata in Fabric requires a Python background process to handle the data tr
    * **Fabric Data Engineering VS Code** (by Microsoft)
    * **Stata Enhanced** (by Kyle Barron)
 
-### 6. Authenticating to Microsoft Fabric
+### 5. Authenticating to Microsoft Fabric
 
 1. Open the Command Palette in VS Code by pressing `Ctrl+Shift+P`.
 2. Type **Fabric Data Engineering: Sign In** and hit Enter.
 3. A web browser window will open. Log in using your standard company Microsoft credentials.
-4. Return to VS Code. If prompted to "Set a local work folder," choose the `Fabric-Stata` folder.
+4. Return to VS Code. If prompted to "Set a local work folder," choose your project folder.
 5. Click the new **Fabric** icon on the left sidebar (it looks like a cursive 'S' mixed with a recycling symbol).
 6. Click **Select Workspace**, and choose your designated Fabric workspace.
 
-### 7. Preparing the Python Environment
+### 6. Create your `config.yaml`
 
-1. In VS Code, open a terminal from the top menu by selecting **Terminal -> New Terminal**. It should automatically open in your project folder.
-2. Create a dedicated virtual environment (an isolated workspace for this project's dependencies) by running:
-   ```powershell
-   uv venv --python 3.11
-   ```
-3. Install the package (and notebook extras) in editable mode from this repo:
-   ```powershell
-   uv pip install -e ".[dev]"
-   ```
-   Or install from GitHub without a local clone:
-   ```powershell
-   uv pip install "git+https://github.com/Codyvanzandt/Fabric-Stata-Quickstart.git"
-   ```
+`load_config()` looks for a file named **`config.yaml`** in your notebook's working directory (usually your project folder). Create that file yourself — it is not installed with the package.
 
-### 8. Configuring Your Settings
+1. In VS Code Explorer, create a new file named **`config.yaml`**.
+2. Paste the following template and fill in your values:
 
-We need to tell the project where Stata is installed on your machine and which Fabric environment to point to.
+```yaml
+stata:
+  install_path: "C:/Program Files/Stata18"
+  edition: "mp"
 
-1. Click the **Explorer** icon in the top left sidebar (it looks like two overlapping pieces of paper) to view your project files. You will find a file named `config.example.yaml`.
-2. Right-click `config.example.yaml` and rename it to **`config.yaml`**.
-3. Click `config.yaml` to open it.
-4. Find the full path to your Stata installation (e.g., `C:/Program Files/Stata18`). Update the Stata section of `config.yaml` to match your path and edition (keep the quotation marks):
-   ```yaml
-   stata:
-     install_path: "C:/Program Files/Stata18"
-     edition: "mp"
-   ```
-5. Further down the file, update the Fabric section with your workspace details.
-   ```yaml
-   fabric:
-     warehouse_server: "<your-id>.datawarehouse.fabric.microsoft.com"
-     warehouse_name: "Your_Workspace_Name"
-     lakehouse_abfs_path: "abfss://Your_Workspace_Name@onelake.dfs.fabric.microsoft.com/Your_Workspace_Name.Lakehouse"
-   ```
-6. Save the file (`Ctrl+S`) and close the tab by clicking the 'X' next to the filename at the top.
+fabric:
+  warehouse_server: "<your-id>.datawarehouse.fabric.microsoft.com"
+  warehouse_name: "Your_Warehouse_Or_Lakehouse_SQL_Name"
+  lakehouse_abfs_path: "abfss://Your_Workspace_Name@onelake.dfs.fabric.microsoft.com/Your_Lakehouse_Name.Lakehouse"
+```
+
+3. Set `install_path` to your Stata install and `edition` to `mp`, `se`, or `be`.
+4. Set the Fabric warehouse and lakehouse values for your workspace.
+5. For `lakehouse_abfs_path`, use the lakehouse root only — **do not** add a trailing `/` or `/Tables` (the library appends `/Tables/...` when writing).
+6. Save the file (`Ctrl+S`).
 
 ## Preparing to Use Stata
 
 You will use Jupyter Notebooks to conduct your analysis. Jupyter is an interactive document format that lets you run blocks of code one at a time and see the results immediately below them.
 
-1. In the VS Code Explorer sidebar, create a new notebook file ending in `.ipynb` (for example, `analysis.ipynb`). You can start from `example.ipynb` in the project root.
+1. In the VS Code Explorer sidebar, create a new notebook file ending in `.ipynb` (for example, `analysis.ipynb`).
 2. Click your newly created file to open it.
 3. In the top right corner of the notebook window, click **Select Kernel**.
-4. Choose **Python Environments** from the dropdown menu, and then select the environment labeled **Fabric-Stata** (it should have a star next to it indicating it is the recommended workspace environment).
+4. Choose **Python Environments** from the dropdown menu, and then select the virtual environment for this project.
 
 You are now fully connected to Fabric and ready to write Stata code!
 
 ## Using Stata
 
-You can create Stata do-files and Jupyter notebooks in the project folder.
+You can create Stata do-files and Jupyter notebooks in your project folder.
 
 ### Setup Your Jupyter Notebook
 
-Every notebook you create needs to include the following code block, which can also be found in **`example.ipynb`**:
+Every notebook you create needs to include the following code block:
 
 ```python
 %load_ext autoreload
