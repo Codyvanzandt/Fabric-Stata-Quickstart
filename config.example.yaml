@@ -8,4 +8,4 @@ fabric:
   # Your Fabric Workspace details
   warehouse_server: "<some id?.datawarehouse.fabric.microsoft.com"
   warehouse_name: "Some_Workspace_Name"
-  lakehouse_abfs_path: "abfss://<Some_Workspace_Name>@onelake.dfs.fabric.microsoft.com/<Some_Workspace_Name>.Lakehouse/Tables"
+  lakehouse_abfs_path: "abfss://<Some_Workspace_Name>@onelake.dfs.fabric.microsoft.com/<Some_Workspace_Name>.Lakehouse"

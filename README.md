@@ -130,7 +130,7 @@ We need to tell the project where Stata is installed on your machine and which F
    fabric:
      warehouse_server: "<your-id>.datawarehouse.fabric.microsoft.com"
      warehouse_name: "Your_Workspace_Name"
-     lakehouse_abfs_path: "abfss://Your_Workspace_Name@onelake.dfs.fabric.microsoft.com/Your_Workspace_Name.Lakehouse/Tables"
+     lakehouse_abfs_path: "abfss://Your_Workspace_Name@onelake.dfs.fabric.microsoft.com/Your_Workspace_Name.Lakehouse"
    ```
 6. Save the file (`Ctrl+S`) and close the tab by clicking the 'X' next to the filename at the top.
 
@@ -158,7 +158,7 @@ Every notebook you create needs to include the following code block, which can a
 %autoreload 2
 
 from fabric_stata import read_table, run_stata_script, write_table, load_config
-from pystata import config as stata_setup
+import stata_setup
 
 config = load_config()
 stata_setup.config(config['stata']['install_path'], config['stata']['edition'])
@@ -189,8 +189,14 @@ processed_data = run_stata_script(fabric_data, "path/to/your/stata/file.do")
 
 ## Write the Data to Fabric
 
-When you're ready to write your new data to Fabric, use the `write_table` function, passing in the dataframe created by `run_stata_script`. You'll also need to pass a Fabria lakehouse schema name and table name.
+When you're ready to write your new data to Fabric, use the `write_table` function with the dataframe from `run_stata_script` and a lakehouse table name. For non-schema-enabled lakehouses, omit schema:
 
 ```python
-write_table(processed_data, "schema_name", "table_name")
+write_table(processed_data, "table_name")
+```
+
+For schema-enabled lakehouses, pass the schema:
+
+```python
+write_table(processed_data, "table_name", schema="dbo")
 ```

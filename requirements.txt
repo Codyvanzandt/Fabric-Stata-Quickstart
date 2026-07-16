@@ -5,4 +5,5 @@ azure-identity
 deltalake
 pyarrow
 pyyaml
+stata-setup
 ipykernel

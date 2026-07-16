@@ -15,6 +15,7 @@ dependencies = [
     "deltalake",
     "pyarrow",
     "pyyaml",
+    "stata-setup",
 ]
 
 [project.optional-dependencies]

@@ -38,27 +38,33 @@ def read_table(schema: str, table_name: str) -> pd.DataFrame:
 
     return df
 
-def write_table(df: pd.DataFrame, schema: str, table_name: str):
+def _lakehouse_table_uri(
+    lakehouse_abfs_path: str, table_name: str, schema: str | None = None
+) -> str:
+    path = lakehouse_abfs_path.strip().rstrip("/")
+    while path.endswith("/Tables"):
+        path = path[: -len("/Tables")].rstrip("/")
+    if schema:
+        return f"{path}/Tables/{schema}/{table_name}"
+    return f"{path}/Tables/{table_name}"
+
+def write_table(df: pd.DataFrame, table_name: str, schema: str | None = None):
     """
-    Writes directly to the Fabric Lakehouse using pure Delta Lake files,
-    incorporating the schema into the OneLake path.
+    Writes directly to the Fabric Lakehouse using pure Delta Lake files.
+    Omit schema for non-schema-enabled lakehouses (Tables/table_name).
+    Pass schema for schema-enabled lakehouses (Tables/schema/table_name).
     """
     config = load_config()
-    lakehouse_path = config['fabric']['lakehouse_abfs_path']
-    
-    # Inject /Tables/ so Fabric recognizes it as a managed Delta table.
-    # We concatenate schema and table_name since standard Lakehouses flatten schemas.
-    full_table_path = f"{lakehouse_path}/Tables/{schema}_{table_name}"
-    
-    # 1. Get token for Storage
+    full_table_path = _lakehouse_table_uri(
+        config["fabric"]["lakehouse_abfs_path"], table_name, schema
+    )
+
     token = _credential.get_token("https://storage.azure.com/.default").token
-    
-    # 2. Write directly to OneLake
     storage_options = {
         "bearer_token": token,
-        "use_fabric_endpoint": "true"
+        "use_fabric_endpoint": "true",
     }
-    
+
     write_deltalake(full_table_path, df, mode="overwrite", storage_options=storage_options)
 
 def run_stata_script(df: pd.DataFrame, do_file_path: str) -> pd.DataFrame:
