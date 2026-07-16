@@ -2,14 +2,39 @@
 
 ## Requirements
 
-* Stata 17+
+* Stata 17+ (provides `pystata`)
 * Windows
+* ODBC Driver 18 for SQL Server
+* Python 3.11+
+* Microsoft Fabric / Azure login access
+
+## Install the library from GitHub
+
+In a virtual environment:
+
+```powershell
+uv pip install "git+https://github.com/Codyvanzandt/Fabric-Stata-Quickstart.git"
+```
+
+Or with pip:
+
+```powershell
+pip install "git+https://github.com/Codyvanzandt/Fabric-Stata-Quickstart.git"
+```
+
+Then import:
+
+```python
+from fabric_stata import load_config, read_table, write_table, run_stata_script
+```
+
+For notebooks and local config, clone this repo (see below). System dependencies such as the ODBC driver, Stata, and Azure authentication are not installed by pip.
 
 ## Installations and Preparations
 
 ### 1. Installing Git & Downloading the Project
 
-To download this project setup to your computer, you will use a version control tool called Git. 
+To download this project setup to your computer, you will use a version control tool called Git.
 
 1. Download and install Git for Windows here: [https://git-scm.com/install/windows](https://git-scm.com/install/windows)
 2. Open **PowerShell** on your computer.
@@ -78,9 +103,13 @@ Using Stata in Fabric requires a Python background process to handle the data tr
    ```powershell
    uv venv --python 3.11
    ```
-3. Install the required Python packages (the libraries needed to talk to Azure and Fabric) by running:
+3. Install the package (and notebook extras) in editable mode from this repo:
    ```powershell
-   uv pip install -r requirements.txt
+   uv pip install -e ".[dev]"
+   ```
+   Or install from GitHub without a local clone:
+   ```powershell
+   uv pip install "git+https://github.com/Codyvanzandt/Fabric-Stata-Quickstart.git"
    ```
 
 ### 8. Configuring Your Settings
@@ -89,7 +118,7 @@ We need to tell the project where Stata is installed on your machine and which F
 
 1. Click the **Explorer** icon in the top left sidebar (it looks like two overlapping pieces of paper) to view your project files. You will find a file named `config.example.yaml`.
 2. Right-click `config.example.yaml` and rename it to **`config.yaml`**.
-3. Click `config.yaml` to open it. 
+3. Click `config.yaml` to open it.
 4. Find the full path to your Stata installation (e.g., `C:/Program Files/Stata18`). Update the Stata section of `config.yaml` to match your path and edition (keep the quotation marks):
    ```yaml
    stata:
@@ -109,29 +138,27 @@ We need to tell the project where Stata is installed on your machine and which F
 
 You will use Jupyter Notebooks to conduct your analysis. Jupyter is an interactive document format that lets you run blocks of code one at a time and see the results immediately below them.
 
-1. In the VS Code Explorer sidebar, right-click the **`src`** folder and select **New File**. 
-2. Name the file anything you like, as long as it ends in `.ipynb` (for example, `analysis.ipynb` or `exploration.ipynb`). 
-3. Click your newly created file to open it.
-4. In the top right corner of the notebook window, click **Select Kernel**. 
-5. Choose **Python Environments** from the dropdown menu, and then select the environment labeled **Fabric-Stata** (it should have a star next to it indicating it is the recommended workspace environment). 
+1. In the VS Code Explorer sidebar, create a new notebook file ending in `.ipynb` (for example, `analysis.ipynb`). You can start from `example.ipynb` in the project root.
+2. Click your newly created file to open it.
+3. In the top right corner of the notebook window, click **Select Kernel**.
+4. Choose **Python Environments** from the dropdown menu, and then select the environment labeled **Fabric-Stata** (it should have a star next to it indicating it is the recommended workspace environment).
 
 You are now fully connected to Fabric and ready to write Stata code!
 
 ## Using Stata
 
-You can create Stata do-files and Jupyter notebooks inside your **`src`** folder.
+You can create Stata do-files and Jupyter notebooks in the project folder.
 
 ### Setup Your Jupyter Notebook
 
-Create a notebook inside **`src`** folder.
+Every notebook you create needs to include the following code block, which can also be found in **`example.ipynb`**:
 
-Every notebook you create needs to include the following code block, which can also be found in **`src/example.ipynb`**:
-
-```
+```python
 %load_ext autoreload
 %autoreload 2
 
-from fabric_utils import read_table, run_stata_script, write_table, load_config
+from fabric_stata import read_table, run_stata_script, write_table, load_config
+from pystata import config as stata_setup
 
 config = load_config()
 stata_setup.config(config['stata']['install_path'], config['stata']['edition'])
@@ -167,5 +194,3 @@ When you're ready to write your new data to Fabric, use the `write_table` functi
 ```python
 write_table(processed_data, "schema_name", "table_name")
 ```
-
-

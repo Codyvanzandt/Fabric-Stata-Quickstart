@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fabric-stata"
+version = "0.1.0"
+description = "Utilities for reading/writing Microsoft Fabric data and running Stata scripts"
+requires-python = ">=3.11"
+dependencies = [
+    "pandas",
+    "sqlalchemy",
+    "pyodbc",
+    "azure-identity",
+    "deltalake",
+    "pyarrow",
+    "pyyaml",
+]
+
+[project.optional-dependencies]
+dev = ["ipykernel"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
